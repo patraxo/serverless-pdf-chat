@@ -1,7 +1,8 @@
 import os, json
 import boto3
 from aws_lambda_powertools import Logger
-from langchain.llms.bedrock import Bedrock
+#from langchain.llms.bedrock import Bedrock
+from langchain_community.chat_models import BedrockChat
 from langchain.memory.chat_message_histories import DynamoDBChatMessageHistory
 from langchain.memory import ConversationBufferMemory
 from langchain.embeddings import BedrockEmbeddings
@@ -33,13 +34,19 @@ def lambda_handler(event, context):
         service_name="bedrock-runtime",
         region_name="us-east-1",
     )
-
+    claude_kwargs =  { 
+        "max_tokens": 2048,  # Claude-3 use “max_tokens” However Claud-2 requires “max_tokens_to_sample”.
+        "temperature": 0.0,
+        "top_k": 250,
+        "top_p": 1,
+        "stop_sequences": ["\n\nHuman"],
+    }
     embeddings, llm = BedrockEmbeddings(
         model_id="amazon.titan-embed-text-v1",
         client=bedrock_runtime,
         region_name="us-east-1",
-    ), Bedrock(
-        model_id="anthropic.claude-v2", client=bedrock_runtime, region_name="us-east-1"
+    ), BedrockChat(
+        model_id="anthropic.claude-3-sonnet-20240229-v1:0", client=bedrock_runtime, region_name="us-east-1", model_kwargs=claude_kwargs,
     )
     faiss_index = FAISS.load_local("/tmp", embeddings)
 
