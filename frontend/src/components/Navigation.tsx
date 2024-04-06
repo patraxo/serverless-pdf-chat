@@ -19,7 +19,7 @@ const Navigation: React.FC<NavigationProps> = ({
 }: NavigationProps) => {
   return (
     //<nav className="bg-violet-900">
-    <nav className="bg-[#194D33]">
+    <nav className="bg-[#1B3666]">
       <div className="container flex flex-wrap items-center justify-between py-3">
         <Link
           to="/"
